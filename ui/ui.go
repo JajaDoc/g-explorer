@@ -197,7 +197,7 @@ func Run() {
 	Views.lookup = make(map[string]View)
 	Views.Pain1 = NewPain1View("pain1", g,1, path, objs)
 	Views.lookup[Views.Pain1.Name] = Views.Pain1
-	Views.Pain2 = NewPain1View("pain2", g, 1, "", []objects.Objects{})
+	Views.Pain2 = NewPain1View("pain2", g, 1, "", []objects.Object{})
 	Views.lookup[Views.Pain2.Name] = Views.Pain2
 	Views.Detail = NewDetailView("detail", g, "", nil)
 	Views.lookup[Views.Detail.Name] = Views.Detail

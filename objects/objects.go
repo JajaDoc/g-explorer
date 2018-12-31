@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 )
 
-type Objects struct {
+type Object struct {
 	Info os.FileInfo
 }
 
@@ -21,15 +21,15 @@ func ChangeDir(path string) (dir string, err error) {
 	return CurrentDir()
 }
 
-func GetObjects(path string) ([]Objects, error) {
+func GetObjects(path string) ([]Object, error) {
 	files, err :=  ioutil.ReadDir(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var objects []Objects
+	var objects []Object
 	for _, f := range files {
-		objects = append(objects, Objects{f})
+		objects = append(objects, Object{f})
 	}
 	return objects, nil
 }

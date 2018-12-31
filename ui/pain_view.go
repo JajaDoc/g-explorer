@@ -16,7 +16,7 @@ type PainView struct {
 	view              *gocui.View
 	header            *gocui.View
 	Index             int
-	Objects           []objects.Objects
+	Objects           []objects.Object
 	Path              string
 
 	//keybindingCompareAll   []keybinding.Key
@@ -24,7 +24,7 @@ type PainView struct {
 }
 
 // NewDetailsView creates a new view object attached the the global [gocui] screen object.
-func NewPain1View(name string, gui *gocui.Gui, painNo int, path string, objects []objects.Objects) (pain1View *PainView) {
+func NewPain1View(name string, gui *gocui.Gui, painNo int, path string, objects []objects.Object) (pain1View *PainView) {
 	pain1View = new(PainView)
 
 	// populate main fields
@@ -100,12 +100,12 @@ func (view *PainView) CursorUp() error {
 
 // Enter input enter
 func (view *PainView) Enter() error {
-	// TODO: impl
+	Views.Detail.selectObject(view.Path, &view.Objects[view.Index])
 	return nil
 }
 
 // SetCursor resets the cursor and orients the file tree view based on the given layer index.
-func (view *PainView) SetCursor(layer int) error {
+func (view *PainView) SetCursor(index int) error {
 	view.Render()
 	return nil
 }
@@ -116,11 +116,8 @@ func (view *PainView) Update() error {
 	return nil
 }
 
-// Render flushes the state objects to the screen. The layers pane reports:
-// 1. the layers of the image + metadata
-// 2. the current selected image
+// Render flushes the state objects to the screen.
 func (view *PainView) Render() error {
-
 	// indicate when selected
 	title := view.Path
 	if view.gui.CurrentView() == view.view {
