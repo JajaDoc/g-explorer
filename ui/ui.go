@@ -25,6 +25,7 @@ type View interface {
 	Setup(*gocui.View, *gocui.View) error
 	CursorDown() error
 	CursorUp() error
+	CursorReset() error
 	Enter() error
 	Render() error
 	Update() error
@@ -63,6 +64,26 @@ func CursorUp(g *gocui.Gui, v *gocui.View) error {
 		}
 	}
 	return nil
+}
+
+// SetCursor set the cursor of Y.
+func ResetCursorY(g *gocui.Gui, v *gocui.View) error {
+	ox, oy := v.Origin()
+	cx, _ := v.Cursor()
+	if err := v.SetCursor(cx, 0); err != nil && oy > 0 {
+		if err := v.SetOrigin(ox, 0); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// toggleView switch view
+func toggleView(g *gocui.Gui, n string) error {
+	_, err := g.SetCurrentView(n)
+	Update()
+	Render()
+	return err
 }
 
 // isNewView determines if a view has already been created based on the set of errors given (a bit hokie)

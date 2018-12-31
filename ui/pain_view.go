@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"strings"
 	"github.com/lunixbochs/vtclean"
+	"log"
+	"github.com/pkg/errors"
+	"path"
 )
 
 // PainView is
@@ -18,10 +21,13 @@ type PainView struct {
 	Index             int
 	Objects           []objects.Object
 	Path              string
+	SelectedIndex     int
 
 	//keybindingCompareAll   []keybinding.Key
 	//keybindingCompareLayer []keybinding.Key
 }
+
+const unselectedIndex = -1
 
 // NewDetailsView creates a new view object attached the the global [gocui] screen object.
 func NewPain1View(name string, gui *gocui.Gui, painNo int, path string, objects []objects.Object) (pain1View *PainView) {
@@ -34,6 +40,7 @@ func NewPain1View(name string, gui *gocui.Gui, painNo int, path string, objects 
 	pain1View.Path = path
 	pain1View.Index = 0
 	pain1View.Objects = objects
+	pain1View.SelectedIndex = unselectedIndex
 
 	return pain1View
 }
@@ -98,9 +105,39 @@ func (view *PainView) CursorUp() error {
 	return nil
 }
 
+// CursorReset resets the cursor.
+func (view *PainView) CursorReset() error {
+	err := ResetCursorY(view.gui, view.view)
+	if err == nil {
+		view.SetCursor(0)
+		view.Index = 0
+	}
+	return nil
+}
+
 // Enter input enter
 func (view *PainView) Enter() error {
-	Views.Detail.selectObject(view.Path, &view.Objects[view.Index])
+	if view.Index > len(view.Objects) {
+		return errors.New("object is nil!")
+	}
+
+	o := view.Objects[view.Index]
+	if view.SelectedIndex == view.Index {
+		if o.Info.IsDir() {
+			// enter directory
+			err := Views.Pain2.setDir(path.Join(view.Path, o.Info.Name()))
+			if err != nil {
+				return err
+			}
+			toggleView(view.gui, Views.Pain2.Name)
+		} else {
+			// TODO: enter file
+		}
+	} else {
+		// preview detail
+		view.SelectedIndex = view.Index
+		Views.Detail.selectObject(view.Path, &view.Objects[view.Index])
+	}
 	return nil
 }
 
@@ -146,4 +183,20 @@ func (view *PainView) KeyHelp() string {
 	return "TODO: Help!"
 	//return renderStatusOption(view.keybindingCompareLayer[0].String(), "Show layer changes", view.CompareMode == CompareLayer) +
 	//	renderStatusOption(view.keybindingCompareAll[0].String(), "Show aggregated changes", view.CompareMode == CompareAll)
+}
+
+func (view *PainView) setDir(p string) error {
+	view.Index = 0
+	view.SelectedIndex = unselectedIndex
+	view.Path = p
+
+	objs, err := objects.GetObjects(p)
+	if err != nil {
+		log.Panicln(err)
+		return err
+	}
+	view.Objects = objs
+
+	// render in CursorReset()
+	return view.CursorReset()
 }

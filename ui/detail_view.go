@@ -55,12 +55,7 @@ func (view *DetailView) Setup(v *gocui.View, header *gocui.View) error {
 	view.header.Frame = false
 
 	// set keybindings
-	if err := view.gui.SetKeybinding(view.Name, gocui.KeyArrowDown, gocui.ModNone, func(*gocui.Gui, *gocui.View) error { return view.CursorDown() }); err != nil {
-		return err
-	}
-	if err := view.gui.SetKeybinding(view.Name, gocui.KeyArrowUp, gocui.ModNone, func(*gocui.Gui, *gocui.View) error { return view.CursorUp() }); err != nil {
-		return err
-	}
+	// not allow key
 
 	return view.Render()
 }
@@ -75,17 +70,25 @@ func (view *DetailView) IsVisible() bool {
 
 // CursorDown moves the cursor down in the layer pane (selecting a higher layer).
 func (view *DetailView) CursorDown() error {
+	// nop
 	return nil
 }
 
 // CursorUp moves the cursor up in the layer pane (selecting a lower layer).
 func (view *DetailView) CursorUp() error {
+	// nop
+	return nil
+}
+
+// CursorReset resets the cursor.
+func (view *DetailView) CursorReset() error {
+	// nop
 	return nil
 }
 
 // Enter input enter
 func (view *DetailView) Enter() error {
-	// TODO: impl
+	// nop
 	return nil
 }
 
