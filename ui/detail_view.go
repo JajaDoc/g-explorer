@@ -221,9 +221,7 @@ func (view *DetailView) previewContentsInDir(dir string) error {
 		return err
 	}
 
-	for _, obj := range objectList {
-		fmt.Fprintln(view.view, obj.Info.Name())
-	}
+	printFormatting(view.view, &objectList)
 	return nil
 }
 

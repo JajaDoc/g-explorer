@@ -134,9 +134,7 @@ func (view *PainView) Render() error {
 
 		// update contents
 		view.view.Clear()
-		for _, obj := range view.Objects {
-			fmt.Fprintln(view.view, obj.Info.Name())
-		}
+		printFormatting(view.view, &view.Objects)
 
 		return nil
 	})

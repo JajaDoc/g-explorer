@@ -11,17 +11,6 @@ import (
 
 const debug = false
 
-var Formatting struct {
-	Header                func(...interface{}) string
-	Selected              func(...interface{}) string
-	StatusSelected        func(...interface{}) string
-	StatusNormal          func(...interface{}) string
-	StatusControlSelected func(...interface{}) string
-	StatusControlNormal   func(...interface{}) string
-	CompareTop            func(...interface{}) string
-	CompareBottom         func(...interface{}) string
-}
-
 // Views contains all rendered UI panes.
 var Views struct {
 	Pain1    *PainView
@@ -179,6 +168,7 @@ func Run() {
 	Formatting.StatusControlNormal = color.New(color.ReverseVideo, color.Bold).SprintFunc()
 	Formatting.CompareTop = color.New(color.BgMagenta).SprintFunc()
 	Formatting.CompareBottom = color.New(color.BgGreen).SprintFunc()
+	Formatting.Directory = color.New(color.FgBlue).SprintFunc()
 
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
