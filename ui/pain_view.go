@@ -116,7 +116,7 @@ func (view *PainView) CursorReset() error {
 }
 
 // Enter input enter
-func (view *PainView) Enter() error {
+func (view *PainView) Enter() (err error) {
 	if view.Index > len(view.Objects) {
 		return errors.New("object is nil!")
 	}
@@ -124,12 +124,49 @@ func (view *PainView) Enter() error {
 	o := view.Objects[view.Index]
 	if view.SelectedIndex == view.Index {
 		if o.Info.IsDir() {
-			// enter directory
-			err := Views.Pain2.setDir(path.Join(view.Path, o.Info.Name()))
-			if err != nil {
-				return err
+			cv := view.gui.CurrentView()
+			cvName := cv.Name()
+			if strings.Contains(strings.ToLower(cvName), "pain1") {
+				// TODO: method
+				if o.Info.Name() == ".." {
+					// display child directory at pain2 view
+					err = Views.Pain2.setDir(view.Path)
+					if err != nil {
+						return err
+					}
+
+					// enter parent directory at pain1 view
+					err = Views.Pain1.setDir(path.Join(view.Path, o.Info.Name()))
+					if err != nil {
+						return err
+					}
+				} else {
+					// enter child directory at pain2 view
+					err = Views.Pain2.setDir(path.Join(view.Path, o.Info.Name()))
+					if err != nil {
+						return err
+					}
+					toggleView(view.gui, Views.Pain2.Name)
+				}
+			} else {
+				if o.Info.Name() == ".." {
+					// toggle pain1 view
+					toggleView(view.gui, Views.Pain1.Name)
+				} else {
+					// display parent directory at pain1 view
+					err = Views.Pain1.setDir(view.Path)
+					if err != nil {
+						return err
+					}
+
+					// enter child directory at pain2 view
+					err = Views.Pain2.setDir(path.Join(view.Path, o.Info.Name()))
+					if err != nil {
+						return err
+					}
+					toggleView(view.gui, Views.Pain2.Name)
+				}
 			}
-			toggleView(view.gui, Views.Pain2.Name)
 		} else {
 			// TODO: enter file
 		}
